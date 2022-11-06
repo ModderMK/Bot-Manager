@@ -13,7 +13,7 @@ namespace FormDesign
 {
     public partial class Bot1 : Form
     {
-        string path = @"C:\Users\fmmmo\Desktop\Outros\Bots\ModderZin v3";
+        string path = @"C:\Users\fmmmo\Desktop\Code\ModderZin v3";
         string startup = "node index.js";
         public Bot1()
         {
@@ -40,13 +40,15 @@ namespace FormDesign
         }
         private void ExecuteCommand(string command)
         {
+            ControlInvoke(richtxtConsole, () => richtxtConsole.Text += command + "\n");
             BackgroundWorker bw = new BackgroundWorker();
             bw.DoWork += (sender, args) => {
 
                 Process process = new Process()
                 {
-                    StartInfo = new ProcessStartInfo("cmd.exe", "/c " + command)
+                    StartInfo = new ProcessStartInfo("cmd.exe")
                     {
+                        Arguments = "/C " + command,
                         CreateNoWindow = true,
                         UseShellExecute = false,
                         RedirectStandardError = true,
@@ -55,12 +57,14 @@ namespace FormDesign
                     }
                 };
                 process.Start();
-
                 if (process != null)
                 {
                     process.OutputDataReceived += ((s, ev) => {
                         string sData = ev.Data;
-                        sData += "\r\n";
+                        if(sData != null)
+                        {
+                            sData += "\r\n";
+                        }
                         ControlInvoke(richtxtConsole, () => richtxtConsole.Text += sData);
                         System.Threading.Thread.Sleep(10);
                         if (ev.Data == null)
